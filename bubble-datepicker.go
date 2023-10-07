@@ -27,6 +27,7 @@ const (
 	// FocusCalendar is a value passed to `model.SetFocus` to accept key msgs that change the week or date
 	FocusCalendar
 )
+//go:generate stringer -type=Focus
 
 // KeyMap is the key bindings for different actions within the datepicker.
 type KeyMap struct {
@@ -91,8 +92,6 @@ type Model struct {
 
 	// focus indicates the component which the end user is focused on
 	focus Focus
-
-	clickCount int
 }
 
 // New returns the Model of the datepicker
@@ -103,7 +102,6 @@ func New(time time.Time) Model {
 		Styles: DefaultStyles(),
 
 		focus:      FocusCalendar,
-		clickCount: 0,
 	}
 }
 
@@ -287,7 +285,6 @@ func (m Model) View() string {
 		rows = append(rows, lipgloss.JoinHorizontal(lipgloss.Center, row...))
 	}
 	b.WriteString(lipgloss.JoinVertical(lipgloss.Center, rows...))
-	b.WriteString(fmt.Sprintf("\nclick count: %d\n", m.clickCount))
 
 	return b.String()
 }
@@ -313,11 +310,6 @@ func (m *Model) LastWeek() {
 	m.Time = m.Time.AddDate(0, 0, -7)
 }
 
-// Tomorrow sets the model's `Time` struct forward 1 day
-func (m *Model) Tomorrow() {
-	m.Time = m.Time.AddDate(0, 0, 1)
-}
-
 // NextWeek sets the model's `Time` struct forward 7 days
 func (m *Model) NextWeek() {
 	m.Time = m.Time.AddDate(0, 0, 7)
@@ -328,9 +320,9 @@ func (m *Model) Yesterday() {
 	m.Time = m.Time.AddDate(0, 0, -1)
 }
 
-// NextMonth sets the model's `Time` struct forward 1 month
-func (m *Model) NextMonth() {
-	m.Time = m.Time.AddDate(0, 1, 0)
+// Tomorrow sets the model's `Time` struct forward 1 day
+func (m *Model) Tomorrow() {
+	m.Time = m.Time.AddDate(0, 0, 1)
 }
 
 // LastMonth sets the model's `Time` struct back 1 month
@@ -338,12 +330,17 @@ func (m *Model) LastMonth() {
 	m.Time = m.Time.AddDate(0, -1, 0)
 }
 
-// NextYear sets the model's `Time` struct forward 1 year
-func (m *Model) NextYear() {
-	m.Time = m.Time.AddDate(1, 0, 0)
+// NextMonth sets the model's `Time` struct forward 1 month
+func (m *Model) NextMonth() {
+	m.Time = m.Time.AddDate(0, 1, 0)
 }
 
 // LastYear sets the model's `Time` struct back 1 year
 func (m *Model) LastYear() {
 	m.Time = m.Time.AddDate(-1, 0, 0)
+}
+
+// NextYear sets the model's `Time` struct forward 1 year
+func (m *Model) NextYear() {
+	m.Time = m.Time.AddDate(1, 0, 0)
 }
