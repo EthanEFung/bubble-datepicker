@@ -17,9 +17,9 @@ func TestNew(t *testing.T) {
 }
 
 func TestSetFocus(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input Focus
-		want Focus
+		want  Focus
 	}{
 		{input: FocusNone, want: FocusNone},
 		{input: FocusCalendar, want: FocusCalendar},
@@ -37,9 +37,9 @@ func TestSetFocus(t *testing.T) {
 }
 
 func TestBlur(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input Focus
-		want Focus
+		want  Focus
 	}{
 		{input: FocusNone, want: FocusNone},
 		{input: FocusCalendar, want: FocusNone},
@@ -58,9 +58,9 @@ func TestBlur(t *testing.T) {
 }
 
 func TestSetTime(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input time.Time
-		want time.Time
+		want  time.Time
 	}{
 		{input: halloween, want: halloween},
 		{input: thanksgiving, want: thanksgiving},
@@ -73,12 +73,12 @@ func TestSetTime(t *testing.T) {
 			t.Errorf("TestSetTime failure - index: %d - want: '%s' got: '%s'", i, test.want, got)
 		}
 	}
-} 
+}
 
 func TestLastWeek(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input time.Time
-		want time.Time
+		want  time.Time
 	}{
 		{input: halloween, want: time.Date(2023, time.October, 24, 0, 0, 0, 0, time.UTC)},
 		{input: thanksgiving, want: time.Date(2023, time.November, 16, 0, 0, 0, 0, time.UTC)},
@@ -94,9 +94,9 @@ func TestLastWeek(t *testing.T) {
 }
 
 func TestNextWeek(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input time.Time
-		want time.Time
+		want  time.Time
 	}{
 		{input: halloween, want: time.Date(2023, time.November, 7, 0, 0, 0, 0, time.UTC)},
 		{input: thanksgiving, want: time.Date(2023, time.November, 30, 0, 0, 0, 0, time.UTC)},
@@ -112,9 +112,9 @@ func TestNextWeek(t *testing.T) {
 }
 
 func TestYesterday(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input time.Time
-		want time.Time
+		want  time.Time
 	}{
 		{input: halloween, want: time.Date(2023, time.October, 30, 0, 0, 0, 0, time.UTC)},
 		{input: thanksgiving, want: time.Date(2023, time.November, 22, 0, 0, 0, 0, time.UTC)},
@@ -130,9 +130,9 @@ func TestYesterday(t *testing.T) {
 }
 
 func TestTomorrow(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input time.Time
-		want time.Time
+		want  time.Time
 	}{
 		{input: halloween, want: time.Date(2023, time.November, 1, 0, 0, 0, 0, time.UTC)},
 		{input: thanksgiving, want: time.Date(2023, time.November, 24, 0, 0, 0, 0, time.UTC)},
@@ -148,9 +148,9 @@ func TestTomorrow(t *testing.T) {
 }
 
 func TestLastMonth(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input time.Time
-		want time.Time
+		want  time.Time
 	}{
 		{input: halloween, want: time.Date(2023, time.September, 31, 0, 0, 0, 0, time.UTC)}, // normalizes
 		{input: thanksgiving, want: time.Date(2023, time.October, 23, 0, 0, 0, 0, time.UTC)},
@@ -166,9 +166,9 @@ func TestLastMonth(t *testing.T) {
 }
 
 func TestNextMonth(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input time.Time
-		want time.Time
+		want  time.Time
 	}{
 		{input: halloween, want: time.Date(2023, time.November, 31, 0, 0, 0, 0, time.UTC)}, // normalizes
 		{input: thanksgiving, want: time.Date(2023, time.December, 23, 0, 0, 0, 0, time.UTC)},
@@ -184,9 +184,9 @@ func TestNextMonth(t *testing.T) {
 }
 
 func TestLastYear(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input time.Time
-		want time.Time
+		want  time.Time
 	}{
 		{input: halloween, want: time.Date(2022, time.October, 31, 0, 0, 0, 0, time.UTC)},
 		{input: thanksgiving, want: time.Date(2022, time.November, 23, 0, 0, 0, 0, time.UTC)},
@@ -202,9 +202,9 @@ func TestLastYear(t *testing.T) {
 }
 
 func TestNextYear(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		input time.Time
-		want time.Time
+		want  time.Time
 	}{
 		{input: halloween, want: time.Date(2024, time.October, 31, 0, 0, 0, 0, time.UTC)},
 		{input: thanksgiving, want: time.Date(2024, time.November, 23, 0, 0, 0, 0, time.UTC)},

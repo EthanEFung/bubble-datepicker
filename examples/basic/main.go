@@ -10,12 +10,14 @@ import (
 )
 
 type model struct {
-	datepicker tea.Model
+	datepicker datepicker.Model
 }
 
 func initialModel() tea.Model {
 	now := time.Now()
-	return datepicker.New(now) 
+	return model{
+		datepicker: datepicker.New(now),
+	}
 }
 
 func (m model) Init() tea.Cmd {
@@ -24,7 +26,6 @@ func (m model) Init() tea.Cmd {
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-
 	// Is it a key press?
 	case tea.KeyMsg:
 

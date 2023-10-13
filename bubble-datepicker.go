@@ -27,6 +27,7 @@ const (
 	// FocusCalendar is a value passed to `model.SetFocus` to accept key msgs that change the week or date
 	FocusCalendar
 )
+
 //go:generate stringer -type=Focus
 
 // KeyMap is the key bindings for different actions within the datepicker.
@@ -101,7 +102,7 @@ func New(time time.Time) Model {
 		KeyMap: DefaultKeyMap(),
 		Styles: DefaultStyles(),
 
-		focus:      FocusCalendar,
+		focus: FocusCalendar,
 	}
 }
 
@@ -111,7 +112,7 @@ func (m Model) Init() tea.Cmd {
 }
 
 // Update changes the state of the datepicker. Update satisfies the `tea.Model` interface
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {

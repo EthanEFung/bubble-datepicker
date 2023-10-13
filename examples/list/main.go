@@ -29,21 +29,21 @@ func (d DayItem) Description() string {
 	return d.Format(time.DateOnly)
 }
 
-func(d DayItem) FilterValue() string {
+func (d DayItem) FilterValue() string {
 	return d.Format(time.DateOnly)
 }
 
 type model struct {
-	holidays list.Model
+	holidays   list.Model
 	datepicker datepicker.Model
 }
 
 func initializeModel() tea.Model {
 	dates := []list.Item{
-		DayItem{"Halloween", time.Date(2023, time.October, 31, 0 ,0, 0, 0, time.UTC)},
-		DayItem{"Thanksgiving", time.Date(2023, time.November, 23, 0 ,0, 0, 0, time.UTC)},
-		DayItem{"Christmas", time.Date(2023, time.December, 25, 0 ,0, 0, 0, time.UTC)},
-		DayItem{"New Years", time.Date(2024, time.January, 1, 0 ,0, 0, 0, time.UTC)},
+		DayItem{"Halloween", time.Date(2023, time.October, 31, 0, 0, 0, 0, time.UTC)},
+		DayItem{"Thanksgiving", time.Date(2023, time.November, 23, 0, 0, 0, 0, time.UTC)},
+		DayItem{"Christmas", time.Date(2023, time.December, 25, 0, 0, 0, 0, time.UTC)},
+		DayItem{"New Years", time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)},
 	}
 
 	l := list.New(dates, list.NewDefaultDelegate(), 0, 0)
@@ -53,7 +53,7 @@ func initializeModel() tea.Model {
 	dp.SetTime(item.Time)
 
 	return model{
-		holidays: l,
+		holidays:   l,
 		datepicker: dp,
 	}
 }
@@ -79,7 +79,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	item := m.holidays.SelectedItem().(DayItem) // sad
 	m.datepicker.SetTime(item.Time)
-	
+
 	return m, cmd
 }
 
