@@ -91,8 +91,11 @@ type Model struct {
 	// Styles represent the Styles struct used to render the datepicker
 	Styles Styles
 
-	// focus indicates the component which the end user is focused on
-	focus Focus
+	// Focused indicates the component which the end user is focused on
+	Focused Focus
+
+	// Selected indicates whether a date is Selected in the datepicker
+	Selected bool
 }
 
 // New returns the Model of the datepicker
@@ -102,7 +105,8 @@ func New(time time.Time) Model {
 		KeyMap: DefaultKeyMap(),
 		Styles: DefaultStyles(),
 
-		focus: FocusCalendar,
+		Focused: FocusCalendar,
+		Selected: false,
 	}
 }
 
@@ -132,7 +136,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			m.updateLeft()
 
 		case key.Matches(msg, m.KeyMap.FocusPrev):
-			switch m.focus {
+			switch m.Focused {
 			case FocusHeaderYear:
 				m.SetFocus(FocusHeaderMonth)
 			case FocusCalendar:
@@ -140,7 +144,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			}
 
 		case key.Matches(msg, m.KeyMap.FocusNext):
-			switch m.focus {
+			switch m.Focused {
 			case FocusHeaderMonth:
 				m.SetFocus(FocusHeaderYear)
 			case FocusHeaderYear:
@@ -152,7 +156,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 }
 
 func (m *Model) updateUp() {
-	switch m.focus {
+	switch m.Focused {
 	case FocusHeaderYear:
 		m.LastYear()
 	case FocusHeaderMonth:
@@ -165,7 +169,7 @@ func (m *Model) updateUp() {
 }
 
 func (m *Model) updateRight() {
-	switch m.focus {
+	switch m.Focused {
 	case FocusHeaderYear:
 		// do nothing
 	case FocusHeaderMonth:
@@ -178,7 +182,7 @@ func (m *Model) updateRight() {
 
 }
 func (m *Model) updateDown() {
-	switch m.focus {
+	switch m.Focused {
 	case FocusHeaderYear:
 		m.NextYear()
 	case FocusHeaderMonth:
@@ -190,7 +194,7 @@ func (m *Model) updateDown() {
 	}
 }
 func (m *Model) updateLeft() {
-	switch m.focus {
+	switch m.Focused {
 	case FocusHeaderYear:
 		m.SetFocus(FocusHeaderMonth)
 	case FocusHeaderMonth:
@@ -212,13 +216,13 @@ func (m Model) View() string {
 
 	tMonth, tYear := month.String(), strconv.Itoa(year)
 
-	if m.focus == FocusHeaderMonth {
+	if m.Focused == FocusHeaderMonth {
 		tMonth = m.Styles.FocusedText.Render(tMonth)
 	} else {
 		tMonth = m.Styles.HeaderText.Render(tMonth)
 	}
 
-	if m.focus == FocusHeaderYear {
+	if m.Focused == FocusHeaderYear {
 		tYear = m.Styles.FocusedText.Render(tYear)
 	} else {
 		tYear = m.Styles.HeaderText.Render(tYear)
@@ -265,8 +269,9 @@ func (m Model) View() string {
 
 		style := m.Styles.Date
 		textStyle := m.Styles.Text
-
-		if day.Day() == m.Time.Day() && day.Month() == day.Month() && m.focus == FocusCalendar {
+		if !m.Selected {
+			// skip modifications to the date
+		} else if day.Day() == m.Time.Day() && day.Month() == day.Month() && m.Focused == FocusCalendar {
 			textStyle = m.Styles.FocusedText
 		} else if day.Day() == m.Time.Day() && day.Month() == day.Month() {
 			textStyle = m.Styles.SelectedText
@@ -293,12 +298,12 @@ func (m Model) View() string {
 // SetsFocus focuses one of the datepicker components. This can also be used to blur
 // the datepicker by passing the Focus `FocusNone`.
 func (m *Model) SetFocus(f Focus) {
-	m.focus = f
+	m.Focused = f
 }
 
 // Blur sets the datepicker focus to `FocusNone`
 func (m *Model) Blur() {
-	m.focus = FocusNone
+	m.Focused = FocusNone
 }
 
 // SetTime sets the model's `Time` struct and is used as reference to the selected date
@@ -344,4 +349,14 @@ func (m *Model) LastYear() {
 // NextYear sets the model's `Time` struct forward 1 year
 func (m *Model) NextYear() {
 	m.Time = m.Time.AddDate(1, 0, 0)
+}
+
+// SelectDate changes the model's Selected to true
+func (m *Model) SelectDate() {
+	m.Selected = true
+}
+
+// UnselectDate changes the model's Selected to false
+func (m *Model) UnselectDate() {
+	m.Selected = false
 }

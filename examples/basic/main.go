@@ -15,8 +15,11 @@ type model struct {
 
 func initialModel() tea.Model {
 	now := time.Now()
+	dp := datepicker.New(now)
+	dp.SelectDate()
+
 	return model{
-		datepicker: datepicker.New(now),
+		datepicker: dp,
 	}
 }
 

@@ -51,6 +51,7 @@ func initializeModel() tea.Model {
 
 	item := l.SelectedItem().(DayItem) // sad
 	dp.SetTime(item.Time)
+	dp.SelectDate()
 
 	return model{
 		holidays:   l,

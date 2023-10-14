@@ -30,7 +30,7 @@ func TestSetFocus(t *testing.T) {
 	model := New(halloween)
 	for i, test := range tests {
 		model.SetFocus(test.input)
-		if got := model.focus; test.want != got {
+		if got := model.Focused; test.want != got {
 			t.Errorf("TestSetFocus failure - index: %d - want: '%s' got: '%s'", i, test.want, got)
 		}
 	}
@@ -51,7 +51,7 @@ func TestBlur(t *testing.T) {
 	for i, test := range tests {
 		model.SetFocus(test.input)
 		model.Blur()
-		if got := model.focus; test.want != got {
+		if got := model.Focused; test.want != got {
 			t.Errorf("TestBlur failure - index: %d - want: '%s' got: '%s'", i, test.want, got)
 		}
 	}
