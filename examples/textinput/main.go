@@ -75,8 +75,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
                 m.input.Blur()
                 m.input.SetValue(m.datepicker.Time.Format(time.DateOnly))
 
-                m.datepicker.SetFocus(datepicker.FocusHeaderMonth)
                 m.datepicker.SelectDate()
+                m.datepicker.SetFocus(datepicker.FocusHeaderMonth)
                 m.datepicker = m.datepicker
                 return m, nil
 
@@ -84,7 +84,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
         case "shift+tab":
             if m.focus == FocusDatePicker && m.datepicker.Focused == datepicker.FocusHeaderMonth {
                 m.focus = FocusInput
-                m.datepicker.SetFocus(datepicker.FocusCalendar)
+                m.datepicker.Blur()
 
                 m.input.Focus()
                 return m, nil
@@ -119,7 +119,7 @@ func (m *Model) UpdateInput(msg tea.Msg) (textinput.Model, tea.Cmd) {
     if err == nil {
         m.datepicker.SetTime(t)
         m.datepicker.SelectDate()
-        m.datepicker.SetFocus(datepicker.FocusCalendar)
+        m.datepicker.Blur()
     } 
     if err != nil && m.datepicker.Selected {
         m.datepicker.UnselectDate()

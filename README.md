@@ -4,6 +4,10 @@
 
 A custom interactive component for [Bubbletea](https://github.com/charmbracelet/bubbletea) applications. This bubble is designed to offer datepicker functionality similar to the [jQuery Datepicker widget](https://api.jqueryui.com/datepicker) from the web world. Easily select dates within your Bubbletea application!
 
+## Disclaimer
+
+Note this library not been released! All code is subject to change so use discretion if including this library in your project. However, your feedback is coveted! Please report any bugs or request features in the `Issues` tab.
+
 ## Features
 
 - Interactive date selection.
@@ -34,6 +38,7 @@ go get github.com/ethanefung/bubble-datepicker
 
    ```go
    dp := datepicker.New(time.Now())
+   dp.SelectDate() // datepicker date is not selected by default
    ```
 
 3. In your `Model` struct, include the datepicker as one of the fields:
@@ -94,12 +99,7 @@ go get github.com/ethanefung/bubble-datepicker
    }
    ```
 
-For more detailed usage and customization options, refer to the library's [documentation](https://github.com/ethanefung/bubble-datepicker).
-
-## Customization
-
-
-You can customize the appearance and behavior of the datepicker component by modifying its settings and styles. Refer to the library's documentation for a complete list of customization options.
+You can customize the appearance and behavior of the datepicker component by modifying its settings and styles. For more detailed usage and customization options, refer to the library's [documentation](https://github.com/ethanefung/bubble-datepicker).
 
 ## Examples
 
@@ -133,7 +133,8 @@ Happy coding with your new bubble datepicker! 📅🎉
 - [ ] ~add bubblezone and create handlers for mouse events~
 - [x] tests
 - [x] include a Usage section in the readme
-- [ ] develop the `examples folder`
-- [ ] add example of the datepicker in a form
-- [ ] add example of the datepicker as a list filter
+- [x] develop the `examples folder`
+- [x] add example of the datepicker with text input
+- [x] add example of the datepicker as a list filter
+- [ ] add gifs to each example in the examples folder
 - [ ] finish the README
