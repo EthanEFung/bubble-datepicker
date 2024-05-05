@@ -1,12 +1,10 @@
 # Bubble Datepicker
 
+![](./examples/basic/basic.gif)
+
 ## Overview
 
 A custom interactive component for [Bubbletea](https://github.com/charmbracelet/bubbletea) applications. This bubble is designed to offer datepicker functionality similar to the [jQuery Datepicker widget](https://api.jqueryui.com/datepicker) from the web world. Easily select dates within your Bubbletea application!
-
-## Disclaimer
-
-Note this library not been released! All code is subject to change so use discretion if including this library in your project. However, your feedback is coveted! Please report any bugs or request features in the `Issues` tab.
 
 ## Features
 
@@ -103,7 +101,7 @@ You can customize the appearance and behavior of the datepicker component by mod
 
 ## Examples
 
-To see examples of how to use this datepicker component in a Bubbletea application, check the `examples` directory in the library's repository. (In current development)
+To see examples of how to use this datepicker component in a Bubbletea application, check the [examples](./examples/) directory in the library's repository.
 
 ## License
 
@@ -115,26 +113,10 @@ We welcome contributions! If you find a bug or have an enhancement in mind, plea
 
 ## Support
 
-If you have any questions or need assistance, please feel free to reach out to us on the [GitHub repository](https://github.com/ethanefung/bubble-datepicker).
+If you have any questions or need assistance, please feel free to reach out to me.
 
 ## Acknowledgments
 
 This library was inspired by the jQuery Datepicker widget and is made possible thanks to the Bubbletea framework and the open-source community.
 
 Happy coding with your new bubble datepicker! 📅🎉
-
-## TODO
-
-- [x] Read through the jquery datepicker widget documentation
-- [x] Decide a handful of customizations to bundle with the launch
-- [x] figure out how to render month views
-- [x] learn how to manage a mouse event in bubbletea
-- [x] figure out how to integrate with a text field
-- [ ] ~add bubblezone and create handlers for mouse events~
-- [x] tests
-- [x] include a Usage section in the readme
-- [x] develop the `examples folder`
-- [x] add example of the datepicker with text input
-- [x] add example of the datepicker as a list filter
-- [ ] add gifs to each example in the examples folder
-- [ ] finish the README
