@@ -38,6 +38,10 @@ type KeyMap struct {
 	Left      key.Binding
 	FocusPrev key.Binding
 	FocusNext key.Binding
+	NextMonth key.Binding
+	LastMonth key.Binding
+	NextYear  key.Binding
+	LastYear  key.Binding
 	Quit      key.Binding
 }
 
@@ -50,6 +54,10 @@ func DefaultKeyMap() KeyMap {
 		Left:      key.NewBinding(key.WithKeys("left", "h")),
 		FocusPrev: key.NewBinding(key.WithKeys("shift+tab")),
 		FocusNext: key.NewBinding(key.WithKeys("tab")),
+		NextMonth: key.NewBinding(key.WithKeys("J")),
+		LastMonth: key.NewBinding(key.WithKeys("K")),
+		NextYear:  key.NewBinding(key.WithKeys("L")),
+		LastYear:  key.NewBinding(key.WithKeys("H")),
 		Quit:      key.NewBinding(key.WithKeys("ctrl+c", "q")),
 	}
 }
@@ -134,6 +142,18 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 		case key.Matches(msg, m.KeyMap.Left):
 			m.updateLeft()
+
+		case key.Matches(msg, m.KeyMap.NextMonth):
+			m.NextMonth()
+
+		case key.Matches(msg, m.KeyMap.LastMonth):
+			m.LastMonth()
+
+		case key.Matches(msg, m.KeyMap.NextYear):
+			m.NextYear()
+
+		case key.Matches(msg, m.KeyMap.LastYear):
+			m.LastYear()
 
 		case key.Matches(msg, m.KeyMap.FocusPrev):
 			switch m.Focused {
