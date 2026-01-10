@@ -105,7 +105,7 @@ func New(time time.Time) Model {
 		KeyMap: DefaultKeyMap(),
 		Styles: DefaultStyles(),
 
-		Focused: FocusCalendar,
+		Focused:  FocusCalendar,
 		Selected: false,
 	}
 }
