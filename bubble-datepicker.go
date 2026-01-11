@@ -271,9 +271,9 @@ func (m Model) View() string {
 		textStyle := m.Styles.Text
 		if !m.Selected {
 			// skip modifications to the date
-		} else if day.Day() == m.Time.Day() && day.Month() == day.Month() && m.Focused == FocusCalendar {
+		} else if day.Day() == m.Time.Day() && day.Month() == m.Time.Month() && m.Focused == FocusCalendar {
 			textStyle = m.Styles.FocusedText
-		} else if day.Day() == m.Time.Day() && day.Month() == day.Month() {
+		} else if day.Day() == m.Time.Day() && day.Month() == m.Time.Month() {
 			textStyle = m.Styles.SelectedText
 		}
 
