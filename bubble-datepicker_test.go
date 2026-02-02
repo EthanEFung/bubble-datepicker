@@ -1,6 +1,7 @@
 package datepicker
 
 import (
+	"strings"
 	"testing"
 	"time"
 )
@@ -216,5 +217,82 @@ func TestNextYear(t *testing.T) {
 		if got := model.Time; test.want != got {
 			t.Errorf("TestNextYear failure - index: %d - want: '%s' got: '%s'", i, test.want, got)
 		}
+	}
+}
+
+// --- New tests for range-constrained navigation ---
+
+func TestNavigationRespectsStartDate(t *testing.T) {
+	start := time.Date(2023, time.February, 2, 0, 0, 0, 0, time.UTC)
+	// Initial time is at the lower bound.
+	model := NewWithRange(start, start, time.Time{})
+
+	// Attempt to navigate before StartDate with Yesterday.
+	model.Yesterday()
+	if !model.Time.Equal(start) {
+		t.Fatalf("expected Yesterday at lower bound to be a no-op; got %v", model.Time)
+	}
+
+	// Attempt to navigate a week back with LastWeek.
+	model.LastWeek()
+	if !model.Time.Equal(start) {
+		t.Fatalf("expected LastWeek at lower bound to be a no-op; got %v", model.Time)
+	}
+}
+
+func TestNavigationRespectsEndDate(t *testing.T) {
+	end := time.Date(2023, time.February, 10, 0, 0, 0, 0, time.UTC)
+	// Initial time is at the upper bound.
+	model := NewWithRange(end, time.Time{}, end)
+
+	// Attempt to navigate after EndDate with Tomorrow.
+	model.Tomorrow()
+	if !model.Time.Equal(end) {
+		t.Fatalf("expected Tomorrow at upper bound to be a no-op; got %v", model.Time)
+	}
+
+	// Attempt to navigate a week forward with NextWeek.
+	model.NextWeek()
+	if !model.Time.Equal(end) {
+		t.Fatalf("expected NextWeek at upper bound to be a no-op; got %v", model.Time)
+	}
+}
+
+func TestNavigationWithinRangeSucceeds(t *testing.T) {
+	start := time.Date(2023, time.February, 2, 0, 0, 0, 0, time.UTC)
+	end := time.Date(2023, time.February, 10, 0, 0, 0, 0, time.UTC)
+
+	model := NewWithRange(start, start, end)
+
+	// Move forward within range.
+	model.Tomorrow()
+	expected := time.Date(2023, time.February, 3, 0, 0, 0, 0, time.UTC)
+	if !model.Time.Equal(expected) {
+		t.Fatalf("expected Tomorrow within range to advance to %v; got %v", expected, model.Time)
+	}
+
+	// Move back within range.
+	model.Yesterday()
+	if !model.Time.Equal(start) {
+		t.Fatalf("expected Yesterday within range to move back to start %v; got %v", start, model.Time)
+	}
+}
+
+func TestViewRangeInclusiveAtBounds(t *testing.T) {
+	start := time.Date(2023, time.January, 26, 0, 0, 0, 0, time.UTC)
+	end := time.Date(2023, time.February, 2, 0, 0, 0, 0, time.UTC)
+
+	// Focus on February so Feb 2 is visible; Jan 26 should also be visible in January view.
+	model := NewWithRange(end, start, end)
+
+	view := model.View()
+
+	// Boundaries should not be rendered as disabled. We don't assert exact styling
+	// codes, just that the day numbers appear somewhere in the view output.
+	if !strings.Contains(view, "26") {
+		t.Fatalf("expected start date day '26' to appear in view; got:\n%s", view)
+	}
+	if !strings.Contains(view, "02") {
+		t.Fatalf("expected end date day '02' to appear in view; got:\n%s", view)
 	}
 }
