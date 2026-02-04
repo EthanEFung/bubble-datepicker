@@ -50,13 +50,34 @@ type KeyMap struct {
 // DefaultKeyMap returns a KeyMap struct with default values
 func DefaultKeyMap() KeyMap {
 	return KeyMap{
-		Up:        key.NewBinding(key.WithKeys("up", "k")),
-		Right:     key.NewBinding(key.WithKeys("right", "l")),
-		Down:      key.NewBinding(key.WithKeys("down", "j")),
-		Left:      key.NewBinding(key.WithKeys("left", "h")),
-		FocusPrev: key.NewBinding(key.WithKeys("shift+tab")),
-		FocusNext: key.NewBinding(key.WithKeys("tab")),
-		Quit:      key.NewBinding(key.WithKeys("ctrl+c", "q")),
+		Up: key.NewBinding(
+			key.WithKeys("up", "k"),
+			key.WithHelp("↑/k", "previous week/year"),
+		),
+		Right: key.NewBinding(
+			key.WithKeys("right", "l"),
+			key.WithHelp("→/l", "next day / move focus right"),
+		),
+		Down: key.NewBinding(
+			key.WithKeys("down", "j"),
+			key.WithHelp("↓/j", "next week/year"),
+		),
+		Left: key.NewBinding(
+			key.WithKeys("left", "h"),
+			key.WithHelp("←/h", "previous day / move focus left"),
+		),
+		FocusPrev: key.NewBinding(
+			key.WithKeys("shift+tab"),
+			key.WithHelp("shift+tab", "focus previous header/calendar"),
+		),
+		FocusNext: key.NewBinding(
+			key.WithKeys("tab"),
+			key.WithHelp("tab", "focus next header/calendar"),
+		),
+		Quit: key.NewBinding(
+			key.WithKeys("ctrl+c", "q"),
+			key.WithHelp("ctrl+c/q", "quit"),
+		),
 	}
 }
 
