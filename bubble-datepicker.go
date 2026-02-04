@@ -56,7 +56,7 @@ func DefaultKeyMap() KeyMap {
 		),
 		Right: key.NewBinding(
 			key.WithKeys("right", "l"),
-			key.WithHelp("→/l", "next day / move focus right"),
+			key.WithHelp("→ /l", "next day / move focus right"),
 		),
 		Down: key.NewBinding(
 			key.WithKeys("down", "j"),
@@ -64,7 +64,7 @@ func DefaultKeyMap() KeyMap {
 		),
 		Left: key.NewBinding(
 			key.WithKeys("left", "h"),
-			key.WithHelp("←/h", "previous day / move focus left"),
+			key.WithHelp("← /h", "previous day / move focus left"),
 		),
 		FocusPrev: key.NewBinding(
 			key.WithKeys("shift+tab"),
