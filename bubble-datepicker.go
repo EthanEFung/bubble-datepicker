@@ -13,6 +13,12 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+// Message
+type InvalidDateNavigationMsg struct {
+	From time.Time
+	To   time.Time
+}
+
 // Focus is a value passed to `model.SetFocus` to indicate what component
 // controls should be available.
 type Focus int
@@ -44,13 +50,34 @@ type KeyMap struct {
 // DefaultKeyMap returns a KeyMap struct with default values
 func DefaultKeyMap() KeyMap {
 	return KeyMap{
-		Up:        key.NewBinding(key.WithKeys("up", "k")),
-		Right:     key.NewBinding(key.WithKeys("right", "l")),
-		Down:      key.NewBinding(key.WithKeys("down", "j")),
-		Left:      key.NewBinding(key.WithKeys("left", "h")),
-		FocusPrev: key.NewBinding(key.WithKeys("shift+tab")),
-		FocusNext: key.NewBinding(key.WithKeys("tab")),
-		Quit:      key.NewBinding(key.WithKeys("ctrl+c", "q")),
+		Up: key.NewBinding(
+			key.WithKeys("up", "k"),
+			key.WithHelp("↑/k", "previous week/year"),
+		),
+		Right: key.NewBinding(
+			key.WithKeys("right", "l"),
+			key.WithHelp("→ /l", "next day / move focus right"),
+		),
+		Down: key.NewBinding(
+			key.WithKeys("down", "j"),
+			key.WithHelp("↓/j", "next week/year"),
+		),
+		Left: key.NewBinding(
+			key.WithKeys("left", "h"),
+			key.WithHelp("← /h", "previous day / move focus left"),
+		),
+		FocusPrev: key.NewBinding(
+			key.WithKeys("shift+tab"),
+			key.WithHelp("shift+tab", "focus previous header/calendar"),
+		),
+		FocusNext: key.NewBinding(
+			key.WithKeys("tab"),
+			key.WithHelp("tab", "focus next header/calendar"),
+		),
+		Quit: key.NewBinding(
+			key.WithKeys("ctrl+c", "q"),
+			key.WithHelp("ctrl+c/q", "quit"),
+		),
 	}
 }
 
@@ -63,6 +90,7 @@ type Styles struct {
 	Text         lipgloss.Style
 	SelectedText lipgloss.Style
 	FocusedText  lipgloss.Style
+	DisabledText lipgloss.Style
 }
 
 // DefaultStyles returns a default `Styles` struct
@@ -76,6 +104,7 @@ func DefaultStyles() Styles {
 		Text:         r.NewStyle().Foreground(lipgloss.Color("247")),
 		SelectedText: r.NewStyle().Bold(true),
 		FocusedText:  r.NewStyle().Foreground(lipgloss.Color("212")).Bold(true),
+		DisabledText: r.NewStyle().Foreground(lipgloss.Color("240")).Faint(true),
 	}
 }
 
@@ -96,6 +125,12 @@ type Model struct {
 
 	// Selected indicates whether a date is Selected in the datepicker
 	Selected bool
+
+	// StartDate represents the start date of the selected date range
+	StartDate time.Time
+
+	// EndDate represents the end date of the selected date range
+	EndDate time.Time
 }
 
 // New returns the Model of the datepicker
@@ -110,6 +145,20 @@ func New(time time.Time) Model {
 	}
 }
 
+func NewWithRange(time time.Time, start, end time.Time) Model {
+	return Model{
+		Time:   time,
+		KeyMap: DefaultKeyMap(),
+		Styles: DefaultStyles(),
+
+		Focused:  FocusCalendar,
+		Selected: false,
+
+		StartDate: start,
+		EndDate:   end,
+	}
+}
+
 // Init satisfies the `tea.Model` interface. This sends a nil cmd
 func (m Model) Init() tea.Cmd {
 	return nil
@@ -119,21 +168,23 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		var cmd tea.Cmd
+
 		switch {
 		case key.Matches(msg, m.KeyMap.Quit):
 			return m, tea.Quit
 
 		case key.Matches(msg, m.KeyMap.Up):
-			m.updateUp()
+			cmd = m.updateUp()
 
 		case key.Matches(msg, m.KeyMap.Right):
-			m.updateRight()
+			cmd = m.updateRight()
 
 		case key.Matches(msg, m.KeyMap.Down):
-			m.updateDown()
+			cmd = m.updateDown()
 
 		case key.Matches(msg, m.KeyMap.Left):
-			m.updateLeft()
+			cmd = m.updateLeft()
 
 		case key.Matches(msg, m.KeyMap.FocusPrev):
 			switch m.Focused {
@@ -151,59 +202,66 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 				m.SetFocus(FocusCalendar)
 			}
 		}
+
+		return m, cmd
 	}
 	return m, nil
 }
 
-func (m *Model) updateUp() {
+func (m *Model) updateUp() tea.Cmd {
 	switch m.Focused {
 	case FocusHeaderYear:
-		m.LastYear()
+		return m.LastYear()
 	case FocusHeaderMonth:
-		m.LastMonth()
+		return m.LastMonth()
 	case FocusCalendar:
-		m.LastWeek()
+		return m.LastWeek()
 	case FocusNone:
 		// do nothing
 	}
+	return nil
 }
 
-func (m *Model) updateRight() {
+func (m *Model) updateRight() tea.Cmd {
 	switch m.Focused {
 	case FocusHeaderYear:
 		// do nothing
 	case FocusHeaderMonth:
 		m.SetFocus(FocusHeaderYear)
 	case FocusCalendar:
-		m.Tomorrow()
+		return m.Tomorrow()
 	case FocusNone:
 		// do nothing
 	}
-
+	return nil
 }
-func (m *Model) updateDown() {
+
+func (m *Model) updateDown() tea.Cmd {
 	switch m.Focused {
 	case FocusHeaderYear:
-		m.NextYear()
+		return m.NextYear()
 	case FocusHeaderMonth:
-		m.NextMonth()
+		return m.NextMonth()
 	case FocusCalendar:
-		m.NextWeek()
+		return m.NextWeek()
 	case FocusNone:
 		// do nothing
 	}
+	return nil
 }
-func (m *Model) updateLeft() {
+
+func (m *Model) updateLeft() tea.Cmd {
 	switch m.Focused {
 	case FocusHeaderYear:
 		m.SetFocus(FocusHeaderMonth)
 	case FocusHeaderMonth:
 		// do nothing
 	case FocusCalendar:
-		m.Yesterday()
+		return m.Yesterday()
 	case FocusNone:
 		// do nothing
 	}
+	return nil
 }
 
 // View renders a month view as a multiline string in the bubbletea application.
@@ -269,12 +327,34 @@ func (m Model) View() string {
 
 		style := m.Styles.Date
 		textStyle := m.Styles.Text
+
 		if !m.Selected {
 			// skip modifications to the date
 		} else if day.Day() == m.Time.Day() && day.Month() == m.Time.Month() && m.Focused == FocusCalendar {
 			textStyle = m.Styles.FocusedText
 		} else if day.Day() == m.Time.Day() && day.Month() == m.Time.Month() {
 			textStyle = m.Styles.SelectedText
+		}
+
+		// check if date is within range, and cross out text if not.
+		if !m.StartDate.IsZero() || !m.EndDate.IsZero() {
+			dayDate := time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, time.UTC)
+
+			if !m.StartDate.IsZero() {
+				startDate := time.Date(m.StartDate.Year(), m.StartDate.Month(), m.StartDate.Day(), 0, 0, 0, 0, time.UTC)
+				// StartDate inclusive: disable only if strictly before.
+				if dayDate.Before(startDate) {
+					textStyle = m.Styles.DisabledText
+				}
+			}
+
+			if !m.EndDate.IsZero() {
+				endDate := time.Date(m.EndDate.Year(), m.EndDate.Month(), m.EndDate.Day(), 0, 0, 0, 0, time.UTC)
+				// EndDate inclusive: disable only if strictly after.
+				if dayDate.After(endDate) {
+					textStyle = m.Styles.DisabledText
+				}
+			}
 		}
 
 		out = style.Copy().Inherit(textStyle.Copy()).Render(out)
@@ -312,43 +392,43 @@ func (m *Model) SetTime(t time.Time) {
 }
 
 // LastWeek sets the model's `Time` struct back 7 days
-func (m *Model) LastWeek() {
-	m.Time = m.Time.AddDate(0, 0, -7)
+func (m *Model) LastWeek() tea.Cmd {
+	return m.setTimeWithinRange(m.Time.AddDate(0, 0, -7))
 }
 
 // NextWeek sets the model's `Time` struct forward 7 days
-func (m *Model) NextWeek() {
-	m.Time = m.Time.AddDate(0, 0, 7)
+func (m *Model) NextWeek() tea.Cmd {
+	return m.setTimeWithinRange(m.Time.AddDate(0, 0, 7))
 }
 
 // Yesterday sets the model's `Time` struct back 1 day
-func (m *Model) Yesterday() {
-	m.Time = m.Time.AddDate(0, 0, -1)
+func (m *Model) Yesterday() tea.Cmd {
+	return m.setTimeWithinRange(m.Time.AddDate(0, 0, -1))
 }
 
 // Tomorrow sets the model's `Time` struct forward 1 day
-func (m *Model) Tomorrow() {
-	m.Time = m.Time.AddDate(0, 0, 1)
+func (m *Model) Tomorrow() tea.Cmd {
+	return m.setTimeWithinRange(m.Time.AddDate(0, 0, 1))
 }
 
 // LastMonth sets the model's `Time` struct back 1 month
-func (m *Model) LastMonth() {
-	m.Time = m.Time.AddDate(0, -1, 0)
+func (m *Model) LastMonth() tea.Cmd {
+	return m.setTimeWithinRange(m.Time.AddDate(0, -1, 0))
 }
 
 // NextMonth sets the model's `Time` struct forward 1 month
-func (m *Model) NextMonth() {
-	m.Time = m.Time.AddDate(0, 1, 0)
+func (m *Model) NextMonth() tea.Cmd {
+	return m.setTimeWithinRange(m.Time.AddDate(0, 1, 0))
 }
 
 // LastYear sets the model's `Time` struct back 1 year
-func (m *Model) LastYear() {
-	m.Time = m.Time.AddDate(-1, 0, 0)
+func (m *Model) LastYear() tea.Cmd {
+	return m.setTimeWithinRange(m.Time.AddDate(-1, 0, 0))
 }
 
 // NextYear sets the model's `Time` struct forward 1 year
-func (m *Model) NextYear() {
-	m.Time = m.Time.AddDate(1, 0, 0)
+func (m *Model) NextYear() tea.Cmd {
+	return m.setTimeWithinRange(m.Time.AddDate(1, 0, 0))
 }
 
 // SelectDate changes the model's Selected to true
@@ -359,4 +439,37 @@ func (m *Model) SelectDate() {
 // UnselectDate changes the model's Selected to false
 func (m *Model) UnselectDate() {
 	m.Selected = false
+}
+
+// setTimeWithinRange attempts to set the time to the given value, but will
+// prevent the change if it falls outside the configured StartDate / EndDate
+// range. If StartDate or EndDate are zero, that side of the range is treated
+// as unbounded.
+func (m *Model) setTimeWithinRange(next time.Time) tea.Cmd {
+	// Normalize comparison to date-only (discard hour/min/sec/nano) to match
+	// how the calendar is rendered and range is visually applied.
+	nextDate := time.Date(next.Year(), next.Month(), next.Day(), 0, 0, 0, 0, time.UTC)
+
+	if !m.StartDate.IsZero() {
+		startDate := time.Date(m.StartDate.Year(), m.StartDate.Month(), m.StartDate.Day(), 0, 0, 0, 0, time.UTC)
+		if nextDate.Before(startDate) {
+			// Out of range on the lower bound; ignore change.
+			return func() tea.Msg {
+				return InvalidDateNavigationMsg{From: m.StartDate, To: m.EndDate}
+			}
+		}
+	}
+
+	if !m.EndDate.IsZero() {
+		endDate := time.Date(m.EndDate.Year(), m.EndDate.Month(), m.EndDate.Day(), 0, 0, 0, 0, time.UTC)
+		if nextDate.After(endDate) {
+			// Out of range on the upper bound; ignore change.
+			return func() tea.Msg {
+				return InvalidDateNavigationMsg{From: m.StartDate, To: m.EndDate}
+			}
+		}
+	}
+
+	m.Time = next
+	return nil
 }
